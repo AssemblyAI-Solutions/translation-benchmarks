@@ -1,0 +1,7 @@
+get_covost_splits.py
+.env
+translate_creds.json
+*.mp3
+__pycache__/
+output
+.DS_Store
