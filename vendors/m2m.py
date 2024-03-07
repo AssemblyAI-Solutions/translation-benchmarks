@@ -6,23 +6,12 @@
 # Cloudflare AI: https://developers.cloudflare.com/workers-ai/models/translation/
 
 import requests
-from dotenv import load_dotenv
 import os
 import time
 
-load_dotenv()
-TOKEN = os.getenv('ASSEMBLY')
-
-### Function params
-### transcript_id: str – AAI transcript_id
-### target_lang: str - target language for the translation
-
-def translate(transcript_id, target_lang):
+def translate(transcript_id, target_lang, from_lang='en'):
     start = time.time()
-    r = requests.get(f'https://worker-lively-firefly-6667.neil-88b.workers.dev?transcript_id={transcript_id}&target_lang={target_lang}', headers={
-        'Authorization': TOKEN
-    })
-
+    r = requests.get(f'https://m2m-translate.neil-88b.workers.dev/?text={transcript_id}&target_lang={target_lang}&from_lang={from_lang}')
     translated_text = r.json()['translated_text']
     end = time.time()
 

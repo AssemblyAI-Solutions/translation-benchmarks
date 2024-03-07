@@ -7,7 +7,7 @@ Current vendors include:
 - [DeepL](https://www.deepl.com/en/docs-api)
 - [OpenAI Whisper (STT + Translation)](https://openai.com/docs/)
 - [Gladia (STT + Translation)](https://docs.gladia.io/reference/)
-- [Python `translate` library](https://github.com/terryyin/translate-python)
+- [Python `translate` library](https://github.com/terryyin/translate-python) using [MyMemory](https://mymemory.translated.net/) API
 - [Meta's m2m100-1.2b](https://about.fb.com/news/2020/10/first-multilingual-machine-translation-model/) (self-hosted on [Cloudflare Workers](https://developers.cloudflare.com/workers-ai/models/translation/))
 
 Follow the steps below to run the benchmarks:
@@ -52,6 +52,3 @@ BLEU measures the similarity between the machine-generated translation and the r
 A higher BLEU score indicates that the machine translation is closer to the human translations, implying better quality.
 
 It doesn't account for the meaning of the text or grammatical correctness in a broader sense.
-
-## Notes:
-- Our Cloudflare Worker is designed to take in an AssemblyAI transcript ID as input, makes a GET request to AssemblyAI's `/transcript` endpoint to fetch the full transcript text, and then translates it using Meta's m2m100-1.2b model. The latency is calculated by measuring the time it takes to send the request to the worker and receive the translated text.

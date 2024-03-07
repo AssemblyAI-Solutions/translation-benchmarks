@@ -3,7 +3,6 @@ from vendors.google_translate import translate as google_translate
 from vendors.m2m import translate as m2m_translate
 from vendors.py_translate import translate as py_translate
 from vendors.gladia import translate as gladia_translate
-from vendors.assembly import transcribe as aai_transcribe
 from vendors.whisper import translate as whisper_translate
 
 from dataset import get_dataset
@@ -60,23 +59,6 @@ def generate_outputs_for_file(audio_path, orig_text, ref_text):
                 'translated_text': gladia_out,
                 'reference_text': ref_text,
                 'translation_time': gladia_latency,
-                'audio_file': audio_path,
-                'original_language': FROM_LANG,
-                'translated_language': TARGET_LANG,
-            })
-        except Exception as e:
-            print(e)
-    
-    if 'm2m' in VENDORS:
-        try:
-            # M2M cloud function takes AssemblyAI transcript ID as input
-            _aai_transcript_id = aai_transcribe(audio_path, FROM_LANG)
-            m2m_out, m2m_latency = m2m_translate(_aai_transcript_id, TARGET_LANG)
-            write_to_csv('m2m', {
-                'original_text': orig_text,
-                'translated_text': m2m_out,
-                'reference_text': ref_text,
-                'translation_time': m2m_latency,
                 'audio_file': audio_path,
                 'original_language': FROM_LANG,
                 'translated_language': TARGET_LANG,
@@ -146,13 +128,28 @@ def generate_outputs_for_file(audio_path, orig_text, ref_text):
         except Exception as e:
             print(e)
 
+    if 'm2m' in VENDORS:
+        try:
+            m2m_out, m2m_latency = m2m_translate(orig_text, TARGET_LANG, FROM_LANG)
+            write_to_csv('m2m', {
+                'original_text': orig_text,
+                'translated_text': m2m_out,
+                'reference_text': ref_text,
+                'translation_time': m2m_latency,
+                'audio_file': audio_path,
+                'original_language': FROM_LANG,
+                'translated_language': TARGET_LANG,
+            })
+        except Exception as e:
+            print(e)
+
 VENDORS = [
     'gladia', 
-    # 'm2m', 
-    # 'whisper', 
-    # 'deepl', 
-    # 'google', 
-    # 'py-translate'
+    'm2m', 
+    'whisper', 
+    'deepl', 
+    'google', 
+    'py-translate'
 ]
 
 FROM_LANG = 'es'
@@ -167,8 +164,6 @@ def main():
         orig_text = f['sentence']
         ref_text = f['translation']
         generate_outputs_for_file(audio_path, orig_text, ref_text)
-        if index == 10:
-            break
-
+        
 if __name__ == "__main__":
     main()
